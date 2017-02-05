@@ -1,23 +1,21 @@
 ---
 - name: "Initialize environment for SIMP installation"
   vars_files:
-    - vars/vars.yaml
+    - ../vars/vars.yaml
   hosts: "{{ hosts }}"
-  remote_user: root
+  remote_user: ec2-user
+  become: true
 
   tasks:
-  - name: Notify slack server orchestration is starting
-    slack:
-      token: '{{ slackToken }}'
-      msg: '{{ banner }} Starting ORC. Getting ready to configure server {{ inventory_hostname }} {{ banner }}'
-      color: warning
-      channel: '{{ slackChannel }}'
-  - name: Place RII repo file
-    template: src=files/rii_simp.repo dest=/etc/yum.repos.d/rii_simp.repo
-  - name: Place RII-Pupmod repo file
-    template: src=files/rii_pupmod.repo dest=/etc/yum.repos.d/rii_pupmod.repo
-  - name: Install EPEL
+  - name: Place EPEL Repo
+    template:
+      src=../files/epel.repo dest=/etc/yum.repos.d/epel.repo
+  - name: Install Addtitional packages
     yum:
       name: "{{ packages }}"
       state: latest
-    register: installed
+  - name: Start and enable apache
+    service:
+      name: httpd
+      state: started
+      enabled: yes
