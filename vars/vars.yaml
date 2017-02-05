@@ -1,0 +1,13 @@
+---
+- hosts:
+  - webapp
+
+- packages:
+  - yum-utils
+  - lsof
+  - htop
+  - atop
+  - curl
+  - sysstat
+  - nodejs
+  - httpd
